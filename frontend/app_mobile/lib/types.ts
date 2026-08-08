@@ -36,4 +36,11 @@ export type GeneratedApp = {
   createdAt: number;
 };
 
-export type RunStatus = 'idle' | 'thinking' | 'building' | 'streaming';
+export type RunStatus = 'idle' | 'thinking' | 'building' | 'streaming' | 'reconnecting';
+
+/** A background run we may still need to re-attach to (survives app restarts). */
+export type PendingRun = {
+  sessionId: string;
+  runId: string;
+  createdAt: number;
+};

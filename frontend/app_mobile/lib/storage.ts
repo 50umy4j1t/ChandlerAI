@@ -8,13 +8,14 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Directory, File, Paths } from 'expo-file-system';
 
 import { newId } from './ids';
-import type { ChatMeta, ChatMessage, GeneratedApp } from './types';
+import type { ChatMeta, ChatMessage, GeneratedApp, PendingRun } from './types';
 
 const K = {
   userId: 'chandler:user_id',
   apiUrl: 'chandler:api_url',
   chats: 'chandler:chats',
   apps: 'chandler:apps',
+  pendingRun: 'chandler:pending_run',
   msgs: (sessionId: string) => `chandler:msgs:${sessionId}`,
 };
 
@@ -56,6 +57,14 @@ export async function deleteChat(sessionId: string) {
   const chats = await loadChats();
   await saveChats(chats.filter((c) => c.sessionId !== sessionId));
 }
+
+/* ------------------------------ pending run ------------------------------ */
+// Runs execute with background=true, so one that was in flight when the app
+// died is still running server-side. This record is what lets us re-attach.
+
+export const loadPendingRun = () => readJson<PendingRun | null>(K.pendingRun, null);
+export const savePendingRun = (run: PendingRun) => writeJson(K.pendingRun, run);
+export const clearPendingRun = () => AsyncStorage.removeItem(K.pendingRun);
 
 /* --------------------------------- apps --------------------------------- */
 

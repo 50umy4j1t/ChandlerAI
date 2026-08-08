@@ -1,6 +1,7 @@
 import { useRouter } from 'expo-router';
 import { useEffect, useMemo, useRef } from 'react';
 import {
+  Alert,
   FlatList,
   KeyboardAvoidingView,
   Platform,
@@ -30,6 +31,15 @@ export default function ChatScreen() {
 
   const { messages, streamingText, status, send, stopRun, newChat, sessionId } = useChandler();
 
+  // Starting a new chat aborts an in-flight run, so never do it silently.
+  const confirmNewChat = () => {
+    if (status === 'idle') return newChat();
+    Alert.alert('Still generating', 'Starting a new chat will cancel the run in progress.', [
+      { text: 'Keep waiting', style: 'cancel' },
+      { text: 'New chat', style: 'destructive', onPress: newChat },
+    ]);
+  };
+
   // The in-flight reply is rendered as a synthetic message so the list scrolls naturally.
   const data = useMemo<ChatMessage[]>(
     () =>
@@ -55,7 +65,7 @@ export default function ChatScreen() {
           </ThemedText>
         </View>
         <View style={styles.headerBtns}>
-          <Pressable onPress={newChat} hitSlop={8} style={styles.iconBtn}>
+          <Pressable onPress={confirmNewChat} hitSlop={8} style={styles.iconBtn}>
             <IconSymbol name="square.and.pencil" size={22} color={c.teal} />
           </Pressable>
           <Pressable onPress={() => router.push('/settings')} hitSlop={8} style={styles.iconBtn}>

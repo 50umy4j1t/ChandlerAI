@@ -1,13 +1,24 @@
+import os
+
 from agno.agent import Agent
 from agno.db.sqlite import SqliteDb
 from agno.models.google import Gemini
 from agno.tools.file_generation import FileGenerationTools
 from agno.os import AgentOS
+
+# On Railway the app filesystem is wiped every deploy; point DB_FILE at a
+# mounted volume (e.g. /data/chandler.db) so sessions and runs survive.
+DB_FILE = os.environ.get("DB_FILE", "tmp/test.db")
+os.makedirs(os.path.dirname(DB_FILE) or ".", exist_ok=True)
+
 app_agent = Agent(
     id="html",
-    model=Gemini(id="gemini-3-flash-preview"),
-    db=SqliteDb(db_file="tmp/test.db"),
-    tools=[FileGenerationTools(output_directory="tmp")],debug_mode=True,
+    model=Gemini(id="gemini-3.5-flash"),
+    db=SqliteDb(db_file=DB_FILE),
+    tools=[FileGenerationTools(output_directory="tmp")],debug_mode=True, add_history_to_context=True,
+    # store_events lets /runs/{id}/resume replay a finished run from the DB when the
+    # in-memory event buffer is gone (client reconnecting after an app/server restart).
+    store_events=True,
     description="You are a helpful quick developer that can generate instant mobile friendly HTML files",
     instructions=[
         "based on the use case given generate mobile friendly html files with the generate html tools",

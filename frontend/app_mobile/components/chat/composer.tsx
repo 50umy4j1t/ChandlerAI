@@ -40,17 +40,30 @@ export function Composer({ status, onSend, onStop }: Props) {
         returnKeyType="send"
         blurOnSubmit={false}
       />
+      {/* Stop is a SEPARATE button in its own position. It deliberately does not
+          replace Send: a double-tap on Send used to land on Stop and kill the run. */}
+      {busy ? (
+        <Pressable
+          onPress={onStop}
+          style={({ pressed }) => [
+            styles.btn,
+            { backgroundColor: c.danger, opacity: pressed ? 0.75 : 1 },
+          ]}>
+          <IconSymbol name="xmark" size={20} color="#fff" />
+        </Pressable>
+      ) : null}
+
       <Pressable
-        onPress={busy ? onStop : submit}
-        disabled={!busy && !text.trim()}
+        onPress={submit}
+        disabled={busy || !text.trim()}
         style={({ pressed }) => [
           styles.btn,
           {
-            backgroundColor: busy ? c.danger : c.couch,
-            opacity: pressed ? 0.75 : !busy && !text.trim() ? 0.4 : 1,
+            backgroundColor: c.couch,
+            opacity: pressed ? 0.75 : busy || !text.trim() ? 0.4 : 1,
           },
         ]}>
-        <IconSymbol name={busy ? 'xmark' : 'paperplane.fill'} size={20} color="#2A1D16" />
+        <IconSymbol name="paperplane.fill" size={20} color="#2A1D16" />
       </Pressable>
     </View>
   );

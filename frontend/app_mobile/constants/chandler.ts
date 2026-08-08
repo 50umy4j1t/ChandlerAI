@@ -16,6 +16,12 @@ export const BUILDING_LINES = [
   'This is me, being productive.',
 ];
 
+export const RECONNECTING_LINES = [
+  'We are NOT on a break. Reconnecting…',
+  'Lost the server. Could it BE any further away?',
+  'Reconnecting… your app is still in the oven.',
+];
+
 export const EMPTY_CHAT_LINES = [
   'We were on a break. Ask me for an app.',
   'Hi, I make apps. It is my thing.',
