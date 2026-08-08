@@ -3,6 +3,7 @@ import os
 from agno.agent import Agent
 from agno.db.sqlite import SqliteDb
 from agno.models.google import Gemini
+from agno.models.ollama import Ollama
 from agno.tools.file_generation import FileGenerationTools
 from agno.os import AgentOS
 
@@ -13,9 +14,19 @@ os.makedirs(os.path.dirname(DB_FILE) or ".", exist_ok=True)
 
 app_agent = Agent(
     id="html",
-    model=Gemini(id="gemini-3.5-flash",thinking_level="high"),
+    model=Gemini("gemini-3.5-flash"),
+    # Ollama Cloud (OLLAMA_API_KEY -> host defaults to https://ollama.com).
+    # Picked for one-shot fidelity on a ~33KB HTML tool-call argument, which is
+    # where smaller models truncate and leave dead controls behind.
+    # think=False, NOT "low": minimax-m3 treats any think level as simply "on", so
+    # "low" bought ~14k chars of reasoning and a 22.6s wait before the first byte,
+    # vs ~1k chars and 7.2s with it off. The build rules live in the prompt anyway.
+    fallback_models=[
+        Ollama(id="gemma4:31b-cloud", request_params={"think": False}),
+        Ollama(id="nemotron-3-ultra:cloud", request_params={"think": False}),
+    ],
     db=SqliteDb(db_file=DB_FILE),
-    tools=[FileGenerationTools(output_directory="tmp")],debug_mode=True, add_history_to_context=True,
+    tools=[FileGenerationTools(output_directory="tmp")],debug_mode=True, add_history_to_context=True,num_history_runs=10,max_tool_calls_from_history=3,
     # store_events lets /runs/{id}/resume replay a finished run from the DB when the
     # in-memory event buffer is gone (client reconnecting after an app/server restart).
     store_events=True,
