@@ -1,5 +1,6 @@
 import { useRouter } from 'expo-router';
-import { useEffect, useMemo, useRef } from 'react';
+
+import { useEffect, useMemo, useRef, useState } from 'react';
 import {
   Alert,
   FlatList,
@@ -46,6 +47,7 @@ export default function ChatScreen() {
   const listRef = useRef<FlatList<ChatMessage>>(null);
 
   const { messages, streamingText, status, send, stopRun, newChat, sessionId } = useChandler();
+  const [headerHeight, setHeaderHeight] = useState(0);
 
   // Starting a new chat aborts an in-flight run, so never do it silently.
   const confirmNewChat = () => {
@@ -74,7 +76,9 @@ export default function ChatScreen() {
 
   return (
     <View style={[styles.flex, { backgroundColor: PERK.headerBg, paddingTop: insets.top }]}>
-      <View style={[styles.header, { borderBottomColor: PERK.frameGold, backgroundColor: PERK.headerBg }]}>
+      <View
+        onLayout={(e) => setHeaderHeight(e.nativeEvent.layout.height)}
+        style={[styles.header, { borderBottomColor: PERK.frameGold, backgroundColor: PERK.headerBg }]}>
         <Image source={LOGO_IMAGE} style={styles.logo} resizeMode="contain" />
         <View style={styles.headerCenter}>
           <ThemedText style={[styles.title, { color: PERK.title }]} numberOfLines={1}>
@@ -98,8 +102,8 @@ export default function ChatScreen() {
         <View style={styles.scrim} />
         <KeyboardAvoidingView
           style={styles.flex}
-          behavior={Platform.OS === 'ios' ? 'padding' : undefined}
-          keyboardVerticalOffset={insets.top + 8}>
+          behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+          keyboardVerticalOffset={insets.top + headerHeight}>
           <FlatList
             ref={listRef}
             data={data}
