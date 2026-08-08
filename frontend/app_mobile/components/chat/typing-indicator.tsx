@@ -2,7 +2,13 @@ import { useEffect, useState } from 'react';
 import { ActivityIndicator, StyleSheet, View } from 'react-native';
 
 import { ThemedText } from '@/components/themed-text';
-import { BUILDING_LINES, LOADING_LINES, RECONNECTING_LINES, pickLine } from '@/constants/chandler';
+import {
+  BUILDING_LINES,
+  LOADING_LINES,
+  RECONNECTING_LINES,
+  STREAMING_LINES,
+  pickLine,
+} from '@/constants/chandler';
 import { Colors } from '@/constants/theme';
 import { useColorScheme } from '@/hooks/use-color-scheme';
 import type { RunStatus } from '@/lib/types';
@@ -18,10 +24,18 @@ export function TypingIndicator({ status }: { status: RunStatus }) {
     return () => clearInterval(id);
   }, []);
 
-  if (status === 'idle' || status === 'streaming') return null;
+  // Stays up through 'streaming' too: the run isn't over until the server says
+  // so, and a spinner that vanishes mid-answer reads as "finished".
+  if (status === 'idle') return null;
 
   const lines =
-    status === 'building' ? BUILDING_LINES : status === 'reconnecting' ? RECONNECTING_LINES : LOADING_LINES;
+    status === 'building'
+      ? BUILDING_LINES
+      : status === 'reconnecting'
+        ? RECONNECTING_LINES
+        : status === 'streaming'
+          ? STREAMING_LINES
+          : LOADING_LINES;
 
   return (
     <View style={[styles.wrap, { backgroundColor: c.bubbleAgent, borderColor: c.border }]}>

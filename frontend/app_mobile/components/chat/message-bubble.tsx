@@ -1,5 +1,6 @@
 import { Pressable, StyleSheet, View } from 'react-native';
 
+import { Markdown } from '@/components/chat/markdown';
 import { ThemedText } from '@/components/themed-text';
 import { IconSymbol } from '@/components/ui/icon-symbol';
 import { Colors } from '@/constants/theme';
@@ -29,9 +30,19 @@ export function MessageBubble({ message, onOpenApp }: Props) {
           { backgroundColor: bg, borderColor: isUser || isError ? 'transparent' : c.border },
           isUser ? styles.bubbleUser : styles.bubbleAgent,
         ]}>
-        <ThemedText style={[styles.text, { color: fg }]}>
-          {isError ? `${ERROR_PREFIX} ${message.text}` : message.text}
-        </ThemedText>
+        {isUser || isError ? (
+          <ThemedText style={[styles.text, { color: fg }]}>
+            {isError ? `${ERROR_PREFIX} ${message.text}` : message.text}
+          </ThemedText>
+        ) : (
+          // Only the agent writes markdown (plans come back as bullet lists).
+          <Markdown
+            text={message.text}
+            color={fg}
+            codeBg={scheme === 'dark' ? '#1A1210' : '#F1E7D8'}
+            accent={c.muted}
+          />
+        )}
 
         {message.appId && onOpenApp ? (
           <Pressable

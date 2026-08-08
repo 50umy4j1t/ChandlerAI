@@ -16,6 +16,13 @@ export const BUILDING_LINES = [
   'This is me, being productive.',
 ];
 
+export const STREAMING_LINES = [
+  'Still talking. Shocking, I know.',
+  'Not done yet…',
+  'Give me a second, I am building to something.',
+  'Almost there.',
+];
+
 export const RECONNECTING_LINES = [
   'We are NOT on a break. Reconnecting…',
   'Lost the server. Could it BE any further away?',
