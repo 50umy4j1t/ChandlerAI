@@ -30,6 +30,7 @@ import type { ChatMessage } from '@/lib/types';
 const BG_IMAGE = require('@/assets/images/central-perk-bg.jpeg');
 // Logo illustration lives at: assets/images/chandler-logo.png
 const LOGO_IMAGE = require('@/assets/images/chandler-logo.png');
+const ICON_IMAGE = require('@/assets/images/icon.png');
 
 const PERK = {
   headerBg: '#122c22', // deep brick-shadow green, matches the "PERK" neon glow
@@ -118,7 +119,7 @@ export default function ChatScreen() {
             ListFooterComponent={<TypingIndicator status={status} />}
             ListEmptyComponent={
               <View style={styles.empty}>
-                <View style={[styles.emptyFrame, { borderColor: PERK.frameGold }]} />
+                <Image source={ICON_IMAGE} style={styles.emptyIcon} resizeMode="contain" />
                 <ThemedText type="subtitle" style={{ color: PERK.title, textAlign: 'center' }}>
                   {pickLine(EMPTY_CHAT_LINES, sessionId.charCodeAt(0) || 0)}
                 </ThemedText>
@@ -153,6 +154,6 @@ const styles = StyleSheet.create({
   iconBtn: { padding: 6 },
   listContent: { paddingVertical: 12, flexGrow: 1 },
   empty: { flex: 1, alignItems: 'center', justifyContent: 'center', padding: 32, gap: 12 },
-  emptyFrame: { width: 90, height: 90, borderWidth: 6, borderRadius: 8, marginBottom: 8 },
+  emptyIcon: { width: 96, height: 96, marginBottom: 8 },
   tagline: { fontSize: 14, textAlign: 'center', fontStyle: 'italic' },
 });
