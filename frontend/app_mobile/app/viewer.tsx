@@ -11,6 +11,9 @@ import { useColorScheme } from '@/hooks/use-color-scheme';
 import { readHtml } from '@/lib/storage';
 import { useChandler } from '@/providers/chandler-provider';
 
+/** Synthetic origin for generated apps — see the baseUrl note on the WebView below. */
+const APP_ORIGIN = 'https://app.chandler.local/';
+
 export default function ViewerScreen() {
   const scheme = useColorScheme() ?? 'light';
   const c = Colors[scheme];
@@ -35,7 +38,10 @@ export default function ViewerScreen() {
 
       {html ? (
         <WebView
-          source={{ html, baseUrl: '' }}
+          // A real https origin (rather than '') gives the page a secure, non-opaque
+          // origin: localStorage works, motion sensors are allowed, and CDN <script>
+          // tags (three.js) resolve. Nothing is actually served from this host.
+          source={{ html, baseUrl: APP_ORIGIN }}
           originWhitelist={['*']}
           javaScriptEnabled
           domStorageEnabled
@@ -44,10 +50,15 @@ export default function ViewerScreen() {
           allowFileAccessFromFileURLs={false}
           allowUniversalAccessFromFileURLs={false}
           setSupportMultipleWindows={false}
-          mediaPlaybackRequiresUserAction
-          // Block every outbound navigation; the agent inlines everything anyway.
+          // Alarms/games need to make sound the moment they fire, not on a second tap.
+          mediaPlaybackRequiresUserAction={false}
+          allowsInlineMediaPlayback
+          // Block every top-level navigation away from the generated page. Subresource
+          // loads (<script src>, <img>) do not pass through here, so CDN libs still load.
           onShouldStartLoadWithRequest={(req) =>
-            req.url === 'about:blank' || req.url.startsWith('data:')
+            req.url === 'about:blank' ||
+            req.url.startsWith('data:') ||
+            req.url.startsWith(APP_ORIGIN)
           }
           style={{ backgroundColor: c.background }}
         />
