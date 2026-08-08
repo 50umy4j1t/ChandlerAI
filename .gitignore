@@ -1,0 +1,44 @@
+# ---------- Node / Expo ----------
+node_modules/
+.expo/
+dist/
+web-build/
+expo-env.d.ts
+.metro-health-check*
+*.tsbuildinfo
+app-example/
+
+# generated native folders
+/frontend/app_mobile/ios/
+/frontend/app_mobile/android/
+
+# native signing material
+.kotlin/
+*.orig.*
+*.jks
+*.p8
+*.p12
+*.key
+*.mobileprovision
+*.pem
+
+# ---------- Python / uv ----------
+.venv/
+__pycache__/
+*.py[cod]
+.python-version
+
+# agno runtime state + generated HTML
+backend/tmp/
+
+# ---------- Secrets ----------
+.env
+.env.*
+!.env.example
+
+# ---------- Logs / OS ----------
+npm-debug.*
+yarn-debug.*
+yarn-error.*
+.DS_Store
+Thumbs.db
